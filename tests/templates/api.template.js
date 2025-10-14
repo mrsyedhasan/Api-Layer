@@ -1,23 +1,23 @@
 const ApiHelper = require('../../src/helpers/apiHelper');
+const { config } = require('../../config');
 
 /**
  * REUSABLE API TEST TEMPLATE
  * 
  * Instructions:
  * 1. Copy this template for your API tests
- * 2. Update the BASE_URL and ENDPOINT
+ * 2. Update the ENDPOINT constant or use config.endpoints
  * 3. Modify the test data as needed
  * 4. Add/remove tests based on your requirements
  */
 
 describe('API Test Template - All HTTP Methods', () => {
   let api;
-  const BASE_URL = 'https://jsonplaceholder.typicode.com';
-  const ENDPOINT = '/posts'; // Change this to your endpoint
+  const ENDPOINT = config.endpoints.products; // Use any endpoint from config
 
   beforeAll(() => {
-    // Initialize API helper with base URL
-    api = new ApiHelper(BASE_URL);
+    // Initialize API helper with config
+    api = new ApiHelper(config);
   });
 
   // ==================== GET TESTS ====================
@@ -52,12 +52,12 @@ describe('API Test Template - All HTTP Methods', () => {
       expect(Array.isArray(response.data)).toBe(true);
     });
 
-    test('GET - Handle 404 error', async () => {
+    test('GET - Handle non-existent item', async () => {
       const response = await api.get(`${ENDPOINT}/99999`);
       
-      // Assertions
-      expect(response.status).toBe(404);
-      expect(response.error).toBeDefined();
+      // Note: Some APIs return 404, others return 200 with null
+      // Fake Store API returns 200, adjust based on your API
+      expect([200, 404]).toContain(response.status);
     });
   });
 
@@ -66,9 +66,10 @@ describe('API Test Template - All HTTP Methods', () => {
     
     test('POST - Create new item', async () => {
       const newItem = {
-        title: 'Test Post',
-        body: 'This is a test post',
-        userId: 1
+        title: 'Test Product',
+        price: 99.99,
+        description: 'Test description',
+        category: 'electronics'
       };
       
       const response = await api.post(ENDPOINT, newItem);
@@ -78,11 +79,10 @@ describe('API Test Template - All HTTP Methods', () => {
       expect(response.data).toBeDefined();
       expect(response.data).toHaveProperty('id');
       expect(response.data.title).toBe(newItem.title);
-      expect(response.data.body).toBe(newItem.body);
     });
 
     test('POST - Create with custom headers', async () => {
-      const newItem = { title: 'Test', body: 'Test body', userId: 1 };
+      const newItem = { title: 'Test', price: 50, category: 'electronics' };
       const customHeaders = { 'X-Custom-Header': 'test-value' };
       
       const response = await api.post(ENDPOINT, newItem, customHeaders);
@@ -93,14 +93,12 @@ describe('API Test Template - All HTTP Methods', () => {
     });
 
     test('POST - Validate response structure', async () => {
-      const newItem = { title: 'Test', body: 'Test body', userId: 1 };
+      const newItem = { title: 'Test', price: 50 };
       const response = await api.post(ENDPOINT, newItem);
       
       // Assertions
       expect(response.data).toHaveProperty('id');
       expect(response.data).toHaveProperty('title');
-      expect(response.data).toHaveProperty('body');
-      expect(response.data).toHaveProperty('userId');
     });
   });
 
@@ -110,10 +108,10 @@ describe('API Test Template - All HTTP Methods', () => {
     test('PUT - Update entire item', async () => {
       const itemId = 1;
       const updatedItem = {
-        id: itemId,
         title: 'Updated Title',
-        body: 'Updated body content',
-        userId: 1
+        price: 149.99,
+        description: 'Updated description',
+        category: 'electronics'
       };
       
       const response = await api.put(`${ENDPOINT}/${itemId}`, updatedItem);
@@ -121,9 +119,7 @@ describe('API Test Template - All HTTP Methods', () => {
       // Assertions
       expect(response.status).toBe(200);
       expect(response.data).toBeDefined();
-      expect(response.data.id).toBe(itemId);
       expect(response.data.title).toBe(updatedItem.title);
-      expect(response.data.body).toBe(updatedItem.body);
     });
 
     test('PUT - Replace all fields', async () => {
@@ -171,7 +167,7 @@ describe('API Test Template - All HTTP Methods', () => {
       const itemId = 1;
       const partialUpdate = {
         title: 'Updated Title',
-        body: 'Updated Body'
+        price: 99.99
       };
       
       const response = await api.patch(`${ENDPOINT}/${itemId}`, partialUpdate);
@@ -179,15 +175,14 @@ describe('API Test Template - All HTTP Methods', () => {
       // Assertions
       expect(response.status).toBe(200);
       expect(response.data.title).toBe(partialUpdate.title);
-      expect(response.data.body).toBe(partialUpdate.body);
+      expect(response.data.price).toBe(partialUpdate.price);
     });
 
     test('PATCH - Handle non-existent item', async () => {
       const response = await api.patch(`${ENDPOINT}/99999`, { title: 'Test' });
       
-      // Assertions
-      expect(response.status).toBe(404);
-      expect(response.error).toBeDefined();
+      // Note: API behavior varies - some return 404, some return 200
+      expect([200, 404]).toContain(response.status);
     });
   });
 

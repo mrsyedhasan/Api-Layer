@@ -7,6 +7,12 @@ yarn.lock
 coverage/
 *.lcov
 
+# Test results
+test-results/
+test-output.txt
+test-report.json
+*.test-results.txt
+
 # Environment variables
 .env
 .env.local

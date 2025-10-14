@@ -1,0 +1,23 @@
+/**
+ * Example: Staging Environment Configuration
+ * 
+ * To use this config:
+ * 1. Copy this file and remove .example extension
+ * 2. Update the baseURL and endpoints
+ * 3. Run: CONFIG_FILE=staging.config npm test
+ */
+module.exports = {
+  env: 'staging',
+  baseURL: 'https://your-staging-api.com',
+  timeout: 10000,
+  retries: 3,
+  endpoints: {
+    products: '/products',
+    users: '/users'
+  },
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
+};
+

@@ -4,14 +4,27 @@ const axios = require('axios');
  * API Helper - Reusable HTTP methods for API testing
  */
 class ApiHelper {
-  constructor(baseURL, headers = {}) {
+  constructor(config) {
+    // Accept either a config object or baseURL string for backward compatibility
+    if (typeof config === 'string') {
+      this.config = {
+        baseURL: config,
+        timeout: 10000,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      };
+    } else {
+      this.config = config;
+    }
+
     this.client = axios.create({
-      baseURL: baseURL,
-      timeout: 10000,
-      headers: {
+      baseURL: this.config.baseURL,
+      timeout: this.config.timeout || 10000,
+      headers: this.config.headers || {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        ...headers
+        'Accept': 'application/json'
       }
     });
   }
@@ -145,4 +158,3 @@ class ApiHelper {
 }
 
 module.exports = ApiHelper;
-
