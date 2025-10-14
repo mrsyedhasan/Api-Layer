@@ -3,26 +3,26 @@
  */
 module.exports = {
   env: 'qa',
-  baseURL: 'https://jsonplaceholder.typicode.com',
+  baseURL: 'https://fakestoreapi.com',
   timeout: 10000,
   retries: 3,
   endpoints: {
-    // Posts (similar to products for testing)
-    products: '/posts',
-    singleProduct: '/posts/:id',
-    productCategories: '/posts',
+    // Products
+    products: '/products',
+    singleProduct: '/products/:id',
+    productCategories: '/products/categories',
     
     // Users
     users: '/users',
     singleUser: '/users/:id',
     
-    // Comments (similar to carts for testing)
-    carts: '/comments',
-    singleCart: '/comments/:id',
-    userCarts: '/comments',
+    // Carts
+    carts: '/carts',
+    singleCart: '/carts/:id',
+    userCarts: '/carts/user/:id',
     
-    // Todos
-    todos: '/todos'
+    // Auth
+    login: '/auth/login'
   },
   headers: {
     'Content-Type': 'application/json',

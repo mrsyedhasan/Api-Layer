@@ -6,7 +6,7 @@ const { config } = require('../config');
  * Run with: npm test
  */
 
-describe('API Layer - CRUD Tests', () => {
+describe('Fake Store API - CRUD Tests', () => {
   let api;
 
   beforeAll(() => {
@@ -15,8 +15,8 @@ describe('API Layer - CRUD Tests', () => {
   });
 
   // ==================== GET TESTS ====================
-  describe('GET - Posts', () => {
-    test('should get all posts', async () => {
+  describe('GET - Products', () => {
+    test('should get all products', async () => {
       const response = await api.get(config.endpoints.products);
       
       expect(response.status).toBe(200);
@@ -24,53 +24,64 @@ describe('API Layer - CRUD Tests', () => {
       expect(response.data.length).toBeGreaterThan(0);
       expect(response.data[0]).toHaveProperty('id');
       expect(response.data[0]).toHaveProperty('title');
-      expect(response.data[0]).toHaveProperty('body');
-      expect(response.data[0]).toHaveProperty('userId');
+      expect(response.data[0]).toHaveProperty('price');
+      expect(response.data[0]).toHaveProperty('category');
     });
 
-    test('should get single post by ID', async () => {
+    test('should get single product by ID', async () => {
       const response = await api.get(`${config.endpoints.products}/1`);
       
       expect(response.status).toBe(200);
       expect(response.data).toHaveProperty('id', 1);
       expect(response.data).toHaveProperty('title');
-      expect(response.data).toHaveProperty('body');
+      expect(response.data).toHaveProperty('price');
     });
 
-    test('should get posts with query params', async () => {
-      const response = await api.get(config.endpoints.productCategories, { _limit: 5 });
+    test('should get all categories', async () => {
+      const response = await api.get(config.endpoints.productCategories);
       
       expect(response.status).toBe(200);
       expect(Array.isArray(response.data)).toBe(true);
-      expect(response.data.length).toBeLessThanOrEqual(5);
+      expect(response.data).toContain('electronics');
+    });
+
+    test('should get products by category', async () => {
+      const response = await api.get(`${config.endpoints.products}/category/electronics`);
+      
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.data)).toBe(true);
+      if (response.data.length > 0) {
+        expect(response.data[0].category).toBe('electronics');
+      }
     });
   });
 
   // ==================== POST TESTS ====================
-  describe('POST - Posts', () => {
-    test('should create a new post', async () => {
-      const newPost = {
-        title: 'Test Post',
-        body: 'Test post body',
-        userId: 1
+  describe('POST - Products', () => {
+    test('should create a new product', async () => {
+      const newProduct = {
+        title: 'Test Product',
+        price: 99.99,
+        description: 'Test product description',
+        image: 'https://i.pravatar.cc',
+        category: 'electronics'
       };
 
-      const response = await api.post(config.endpoints.products, newPost);
+      const response = await api.post(config.endpoints.products, newProduct);
       
       expect(response.status).toBe(201);
       expect(response.data).toHaveProperty('id');
-      expect(response.data.title).toBe(newPost.title);
-      expect(response.data.body).toBe(newPost.body);
+      expect(response.data.title).toBe(newProduct.title);
+      expect(response.data.price).toBe(newProduct.price);
     });
 
-    test('should create post with minimal data', async () => {
-      const minPost = {
-        title: 'Minimal Post',
-        body: 'Body',
-        userId: 1
+    test('should create product with minimal data', async () => {
+      const minProduct = {
+        title: 'Minimal Product',
+        price: 50
       };
 
-      const response = await api.post(config.endpoints.products, minPost);
+      const response = await api.post(config.endpoints.products, minProduct);
       
       expect(response.status).toBe(201);
       expect(response.data).toHaveProperty('id');
@@ -78,40 +89,41 @@ describe('API Layer - CRUD Tests', () => {
   });
 
   // ==================== PUT TESTS ====================
-  describe('PUT - Posts', () => {
-    test('should update entire post', async () => {
-      const updatedPost = {
-        id: 1,
-        title: 'Updated Post',
-        body: 'Updated body content',
-        userId: 1
+  describe('PUT - Products', () => {
+    test('should update entire product', async () => {
+      const updatedProduct = {
+        title: 'Updated Product',
+        price: 149.99,
+        description: 'Updated description',
+        image: 'https://i.pravatar.cc',
+        category: 'electronics'
       };
 
-      const response = await api.put(`${config.endpoints.products}/1`, updatedPost);
+      const response = await api.put(`${config.endpoints.products}/1`, updatedProduct);
       
       expect(response.status).toBe(200);
-      expect(response.data.title).toBe(updatedPost.title);
-      expect(response.data.body).toBe(updatedPost.body);
+      expect(response.data.title).toBe(updatedProduct.title);
+      expect(response.data.price).toBe(updatedProduct.price);
     });
   });
 
   // ==================== PATCH TESTS ====================
-  describe('PATCH - Posts', () => {
-    test('should partially update post', async () => {
+  describe('PATCH - Products', () => {
+    test('should partially update product', async () => {
       const partialUpdate = {
-        title: 'Updated Title Only'
+        price: 199.99
       };
 
       const response = await api.patch(`${config.endpoints.products}/1`, partialUpdate);
       
       expect(response.status).toBe(200);
-      expect(response.data.title).toBe(partialUpdate.title);
+      expect(response.data.price).toBe(partialUpdate.price);
     });
   });
 
   // ==================== DELETE TESTS ====================
-  describe('DELETE - Posts', () => {
-    test('should delete post', async () => {
+  describe('DELETE - Products', () => {
+    test('should delete product', async () => {
       const response = await api.delete(`${config.endpoints.products}/1`);
       
       expect(response.status).toBe(200);
@@ -128,9 +140,9 @@ describe('API Layer - CRUD Tests', () => {
     });
   });
 
-  // ==================== COMMENTS TESTS ====================
-  describe('GET - Comments', () => {
-    test('should get all comments', async () => {
+  // ==================== CARTS TESTS ====================
+  describe('GET - Carts', () => {
+    test('should get all carts', async () => {
       const response = await api.get(config.endpoints.carts);
       
       expect(response.status).toBe(200);
