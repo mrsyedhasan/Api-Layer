@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jest --verbose",
     "test:qa": "CONFIG_FILE=qa.config jest --verbose",
+    "test:report": "npm test && open test-results/test-report.html",
     "test:output": "jest --verbose --json --outputFile=test-results/test-output.json > test-results/test-output.txt 2>&1 || true && cat test-results/test-output.txt",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
@@ -22,7 +23,7 @@
     "axios": "^1.6.2"
   },
   "devDependencies": {
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "jest-html-reporter": "^4.3.0"
   }
 }
-

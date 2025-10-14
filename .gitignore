@@ -11,6 +11,7 @@ coverage/
 test-results/
 test-output.txt
 test-report.json
+test-report.html
 *.test-results.txt
 
 # Environment variables

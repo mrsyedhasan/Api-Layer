@@ -18,11 +18,32 @@ npm test
 npm run test:qa              # Uses qa.config.js
 CONFIG_FILE=staging.config npm test   # Uses staging.config.js (if you create it)
 
+# Run tests and open HTML report
+npm run test:report
+
 # Watch mode (auto-run on file changes)
 npm run test:watch
 
 # Coverage report
 npm run test:coverage
+```
+
+## Test Reports
+
+Every test run automatically generates an **HTML report** at `test-results/test-report.html`.
+
+**Features:**
+- 📊 Visual test summary with pass/fail stats
+- ⏱️ Execution time for each test
+- 📝 Console logs captured
+- 🎨 Dark theme UI
+- 📱 Mobile responsive
+
+**Open the report:**
+```bash
+open test-results/test-report.html
+# or
+npm run test:report  # Runs tests + opens report
 ```
 
 ## Quick Start
