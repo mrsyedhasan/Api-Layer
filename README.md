@@ -32,6 +32,9 @@ npm run test:watch
 
 # Coverage report
 npm run test:coverage
+
+# Save test results to files
+npm run test:output
 ```
 
 ## Test Reports
@@ -56,7 +59,7 @@ npm run test:report  # Runs tests + opens report
 
 ```javascript
 const ApiHelper = require('./src/helpers/apiHelper');
-const { config } = require('./config');
+const config = require('./config');
 
 describe('My API Tests', () => {
   let api;
@@ -89,21 +92,31 @@ describe('My API Tests', () => {
 ## Features
 
 - ✅ Reusable `ApiHelper` class for all HTTP methods (GET, POST, PUT, PATCH, DELETE)
+- ✅ **Dual API Support** - Fake Store API + DummyJSON API
 - ✅ Centralized config for API endpoints and settings
 - ✅ Consistent response format with status, data, headers, and error handling
 - ✅ Ready-to-use templates for common API test scenarios
 - ✅ Built with Axios and Jest
 - ✅ **HTML Test Reports** - Beautiful visual reports with dark theme
+- ✅ **Smart CI/CD** - DummyJSON tests run in CI, Fake Store tests skipped
 
 ## API Endpoints
 
-Testing against **Fake Store API** (`https://fakestoreapi.com`):
+Testing against **dual APIs**:
+
+### **Fake Store API** (`https://fakestoreapi.com`)
 - Products: `/products`
 - Users: `/users`
 - Carts: `/carts`
 - Auth: `/auth/login`
 
-See `config/qa.config.js` for all available endpoints.
+### **DummyJSON API** (`https://dummyjson.com`)
+- Products: `/products`
+- Users: `/users`
+- Carts: `/carts`
+- Posts: `/posts`
+
+See `config/qa.config.js` for all available endpoints and configurations.
 
 ## Adding New Environments
 
