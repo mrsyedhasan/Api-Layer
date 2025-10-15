@@ -27,5 +27,5 @@ const config = loadConfig(configFile);
 
 module.exports = {
   loadConfig,
-  config
+  ...config
 };

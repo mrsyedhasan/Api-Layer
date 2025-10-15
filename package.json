@@ -6,6 +6,8 @@
   "scripts": {
     "test": "jest --verbose",
     "test:qa": "CONFIG_FILE=qa.config jest --verbose",
+    "test:dummy": "CONFIG_FILE=qa.config jest tests/dummyjson.test.js --verbose",
+    "test:fakestore": "CONFIG_FILE=qa.config jest tests/fakestore.test.js --verbose",
     "test:report": "npm test && open test-results/test-report.html",
     "test:output": "jest --verbose --json --outputFile=test-results/test-output.json > test-results/test-output.txt 2>&1 || true && cat test-results/test-output.txt",
     "test:watch": "jest --watch",

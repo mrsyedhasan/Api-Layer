@@ -1,5 +1,5 @@
 const ApiHelper = require('../src/helpers/apiHelper');
-const { config } = require('../config');
+const config = require('../config');
 
 /**
  * Fake Store API Tests
