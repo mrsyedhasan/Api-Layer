@@ -1,0 +1,141 @@
+name: API Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run daily at 6 AM UTC for health checks
+    - cron: '0 6 * * *'
+
+jobs:
+  api-tests:
+    name: API Tests (DummyJSON + Skipped Fake Store)
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run API Tests (CI Mode)
+      run: npm test
+      env:
+        CI: true
+        NODE_ENV: ci
+        
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-node-${{ matrix.node-version }}
+        path: |
+          test-results/
+          coverage/
+        retention-days: 7
+        
+    - name: Generate test report
+      run: npm run test:report
+      if: always()
+      env:
+        CI: true
+        NODE_ENV: ci
+        
+    - name: Upload HTML report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: html-test-report-node-${{ matrix.node-version }}
+        path: test-results/test-report.html
+        retention-days: 7
+
+  dummyjson-only:
+    name: DummyJSON Tests Only
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run DummyJSON Tests Only
+      run: npm run test:dummy
+      
+    - name: Upload DummyJSON results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: dummyjson-test-results
+        path: test-results/
+        retention-days: 7
+
+  pr-comment:
+    name: Comment on PR
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: [api-tests, dummyjson-only]
+    
+    steps:
+    - name: Comment PR with test results
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { data: comments } = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+          });
+          
+          const botComment = comments.find(comment => 
+            comment.user.type === 'Bot' && comment.body.includes('API Tests')
+          );
+          
+          const commentBody = `## 🧪 API Test Results
+          
+          **Test Status:**
+          - ✅ DummyJSON Tests: All passed (CI/CD friendly)
+          - ⏭️ Fake Store Tests: Skipped in CI (rate limiting)
+          
+          **Environment:** CI/CD Pipeline
+          **Node Versions:** 18.x, 20.x
+          
+          > Note: Fake Store API tests are skipped in CI due to rate limiting. Run \`npm run test:fakestore\` locally to test Fake Store API.
+          
+          [View full test results](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`;
+          
+          if (botComment) {
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: botComment.id,
+              body: commentBody
+            });
+          } else {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: commentBody
+            });
+          }

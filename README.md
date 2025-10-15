@@ -1,6 +1,8 @@
 # Api-Layer
 
-API Testing Framework with Axios and Jest for Fake Store API - Reusable templates for all HTTP methods (GET, POST, PUT, PATCH, DELETE).
+API Testing Framework with Axios and Jest - Reusable templates for all HTTP methods (GET, POST, PUT, PATCH, DELETE). Supports multiple APIs including Fake Store API and DummyJSON.
+
+[![API Tests](https://github.com/mrsyedhasan/Api-Layer/workflows/API%20Tests/badge.svg)](https://github.com/mrsyedhasan/Api-Layer/actions)
 
 ## Setup
 
@@ -13,6 +15,10 @@ npm install
 ```bash
 # Run all tests (uses qa.config.js by default)
 npm test
+
+# Run specific test suites
+npm run test:dummy           # DummyJSON tests only (CI/CD friendly)
+npm run test:fakestore       # Fake Store API tests only (local only)
 
 # Run tests with specific config file
 npm run test:qa              # Uses qa.config.js
@@ -126,19 +132,61 @@ CONFIG_FILE=staging.config npm test
 "test:staging": "CONFIG_FILE=staging.config jest --verbose"
 ```
 
+## CI/CD Pipeline
+
+This project includes GitHub Actions workflows for automated testing:
+
+### 🚀 **Automated Testing**
+- **Triggers**: Push to main/develop, Pull Requests, Daily scheduled runs
+- **Node Versions**: 18.x, 20.x
+- **Test Strategy**: 
+  - ✅ **DummyJSON Tests**: Run in CI (no rate limiting)
+  - ⏭️ **Fake Store Tests**: Skipped in CI (rate limiting issues)
+
+### 📊 **CI/CD Features**
+- **Test Reports**: HTML reports uploaded as artifacts
+- **PR Comments**: Automatic test results posted to PRs
+- **Daily Health Checks**: Scheduled runs to monitor API health
+- **Multi-Node Testing**: Tests run on Node 18.x and 20.x
+
+### 🔧 **Local vs CI Testing**
+```bash
+# Local development (both APIs)
+npm test                    # All tests (DummyJSON + Fake Store)
+
+# CI/CD environment (DummyJSON only)
+CI=true npm test            # DummyJSON tests only, Fake Store skipped
+
+# Specific API testing
+npm run test:dummy          # DummyJSON only
+npm run test:fakestore      # Fake Store only (local)
+```
+
+### 📁 **Workflow Files**
+- `.github/workflows/api-tests.yml` - Main CI/CD pipeline
+
 ## Project Structure
 
 ```
 config/
-  ├── qa.config.js          # API configuration and endpoints
+  ├── qa.config.js          # API configuration (Fake Store + DummyJSON)
   └── index.js              # Config loader
 
 src/helpers/
   └── apiHelper.js          # Reusable API helper with all HTTP methods
 
 tests/
-  ├── fakestore.test.js     # Main test file
-  ├── templates/            # Reusable test templates
-  └── examples/             # Example test files
+  ├── fakestore.test.js     # Fake Store API tests (local only)
+  └── dummyjson.test.js     # DummyJSON API tests (CI/CD friendly)
+
+.github/workflows/
+  └── api-tests.yml         # GitHub Actions CI/CD pipeline
+
+test-results/
+  └── test-report.html      # Generated HTML test report
+
+jest.config.js              # Jest configuration with HTML reporting
+package.json                # Dependencies and scripts
+README.md                   # This file
 ```
 
